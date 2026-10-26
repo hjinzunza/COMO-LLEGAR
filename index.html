@@ -2,11 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLAYA TRANSPORTE V14.5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e1a27">
+<title>PLAYA TRANSPORTE V15</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -146,6 +149,7 @@ nav button {
 <h1>🚌🚆 PLAYA TRANSPORTE</h1>
 
 <label for="origen">ORIGEN</label>
+
 <div class="buscador">
     <input
         id="origen"
@@ -156,6 +160,7 @@ nav button {
 </div>
 
 <label for="destino">DESTINO</label>
+
 <div class="buscador">
     <input
         id="destino"
@@ -168,8 +173,13 @@ nav button {
 <div id="estado" role="status"></div>
 
 <nav>
-    <button id="invertir" type="button">⇄ INVERTIR</button>
-    <button id="limpiar" type="button">✕ LIMPIAR</button>
+    <button id="invertir" type="button">
+        ⇄ INVERTIR
+    </button>
+
+    <button id="limpiar" type="button">
+        ✕ LIMPIAR
+    </button>
 </nav>
 
 <button class="primary" id="planificar" type="button">
@@ -181,6 +191,9 @@ nav button {
 </main>
 
 <script>
+
+// ELEMENTOS
+
 const origen = document.getElementById("origen");
 const destino = document.getElementById("destino");
 const reloj = document.getElementById("reloj");
@@ -188,11 +201,15 @@ const estado = document.getElementById("estado");
 
 const sugerenciasOrigen =
     document.getElementById("sugerenciasOrigen");
+
 const sugerenciasDestino =
     document.getElementById("sugerenciasDestino");
 
+
 // RELOJ DE CHILE
+
 function hora() {
+
     reloj.textContent = new Intl.DateTimeFormat("es-CL", {
         timeZone: "America/Santiago",
         hour: "2-digit",
@@ -200,32 +217,197 @@ function hora() {
         second: "2-digit",
         hour12: false
     }).format(new Date());
+
 }
+
 setInterval(hora, 1000);
 hora();
 
-// BUSCADOR AUTOMÁTICO
+
+// LUGARES LOCALES DE LA QUINTA REGIÓN
+
+const lugaresLocales = [
+
+    "Plaza Vergara, Viña del Mar, Chile",
+    "Avenida Libertad, Viña del Mar, Chile",
+    "Avenida Perú, Viña del Mar, Chile",
+    "Playa Acapulco, Viña del Mar, Chile",
+    "Playa Caleta Abarca, Viña del Mar, Chile",
+    "Reloj de Flores, Viña del Mar, Chile",
+    "Quinta Vergara, Viña del Mar, Chile",
+    "Hospital Gustavo Fricke, Viña del Mar, Chile",
+    "Terminal de Buses de Viña del Mar, Chile",
+    "Estación Viña del Mar, Chile",
+    "Estación Miramar, Viña del Mar, Chile",
+    "Estación Recreo, Viña del Mar, Chile",
+    "Estación Chorrillos, Viña del Mar, Chile",
+    "Estación El Salto, Viña del Mar, Chile",
+    "Recreo, Viña del Mar, Chile",
+    "Miraflores, Viña del Mar, Chile",
+    "Achupallas, Viña del Mar, Chile",
+    "Reñaca, Viña del Mar, Chile",
+    "Concón, Región de Valparaíso, Chile",
+
+    "Plaza Sotomayor, Valparaíso, Chile",
+    "Plaza Victoria, Valparaíso, Chile",
+    "Plaza Aníbal Pinto, Valparaíso, Chile",
+    "Estación Puerto, Valparaíso, Chile",
+    "Estación Bellavista, Valparaíso, Chile",
+    "Estación Francia, Valparaíso, Chile",
+    "Estación Barón, Valparaíso, Chile",
+    "Terminal Rodoviario, Valparaíso, Chile",
+    "Avenida Argentina, Valparaíso, Chile",
+    "Cerro Alegre, Valparaíso, Chile",
+    "Cerro Concepción, Valparaíso, Chile",
+    "Playa Ancha, Valparaíso, Chile",
+    "Placilla, Valparaíso, Chile",
+
+    "Plaza de Quilpué, Quilpué, Chile",
+    "Estación Quilpué, Chile",
+    "Estación El Sol, Quilpué, Chile",
+    "Estación El Belloto, Quilpué, Chile",
+    "El Belloto, Quilpué, Chile",
+
+    "Plaza de Villa Alemana, Chile",
+    "Estación Villa Alemana, Chile",
+    "Estación La Concepción, Villa Alemana, Chile",
+    "Estación Peñablanca, Villa Alemana, Chile",
+
+    "Plaza de Limache, Chile",
+    "Estación Limache, Chile",
+    "Terminal de Buses de Limache, Chile",
+
+    "Plaza de Quillota, Chile",
+    "Terminal de Buses de Quillota, Chile",
+
+    "Plaza de San Antonio, Chile",
+    "Terminal de Buses de San Antonio, Chile"
+
+];
+
+
+// NORMALIZAR TEXTO
+
+function normalizar(texto) {
+
+    return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+
+}
+
+
+// CACHÉ DE BÚSQUEDAS
+
+const cache = new Map();
+
 const temporizadores = new Map();
+
 const controladores = new Map();
 
+
+// MOSTRAR SUGERENCIAS
+
+function mostrarSugerencias(input, lista, resultados) {
+
+    lista.replaceChildren();
+
+    const unicos = [...new Set(resultados)];
+
+    unicos.slice(0, 12).forEach(direccion => {
+
+        const boton = document.createElement("button");
+
+        boton.type = "button";
+        boton.className = "sugerencia";
+        boton.textContent = direccion;
+
+        boton.onclick = () => {
+
+            input.value = direccion;
+
+            lista.style.display = "none";
+            lista.replaceChildren();
+
+            estado.textContent = "";
+
+        };
+
+        lista.appendChild(boton);
+
+    });
+
+    lista.style.display =
+        unicos.length > 0 ? "block" : "none";
+
+}
+
+
+// BUSCADOR INTELIGENTE
+
 function configurarBuscador(input, lista) {
+
+    let numeroBusqueda = 0;
+
     input.addEventListener("input", () => {
+
+        numeroBusqueda++;
+
+        const busquedaActual = numeroBusqueda;
+
         clearTimeout(temporizadores.get(input));
 
         const anterior = controladores.get(input);
+
         if (anterior) anterior.abort();
+
+        const texto = input.value.trim();
 
         lista.style.display = "none";
         lista.replaceChildren();
 
-        const texto = input.value.trim();
+        if (texto.length < 2) return;
+
+        const consulta = normalizar(texto);
+
+        // SUGERENCIAS LOCALES INSTANTÁNEAS
+
+        const locales = lugaresLocales.filter(lugar => {
+
+            return normalizar(lugar).includes(consulta);
+
+        });
+
+        mostrarSugerencias(input, lista, locales);
+
+        // RESULTADOS GUARDADOS EN CACHÉ
+
+        if (cache.has(consulta)) {
+
+            mostrarSugerencias(
+                input,
+                lista,
+                [...locales, ...cache.get(consulta)]
+            );
+
+            return;
+
+        }
+
+        // CONSULTA EXTERNA
+
         if (texto.length < 3) return;
 
         const temporizador = setTimeout(async () => {
+
             const controlador = new AbortController();
+
             controladores.set(input, controlador);
 
             try {
+
                 const url =
                     "https://photon.komoot.io/api/" +
                     "?q=" + encodeURIComponent(texto) +
@@ -243,36 +425,36 @@ function configurarBuscador(input, lista) {
 
                 const datos = await respuesta.json();
 
-                if (input.value.trim() !== texto) return;
+                if (numeroBusqueda !== busquedaActual) return;
 
-                lista.replaceChildren();
+                const encontrados = [];
 
-                const lugares = (datos.features || []).filter(lugar => {
+                (datos.features || []).forEach(lugar => {
+
                     const p = lugar.properties || {};
-                    const info = [
+
+                    const informacion = [
                         p.state,
                         p.county,
                         p.city,
                         p.district
                     ].filter(Boolean).join(" ").toLowerCase();
 
-                    return (
-                        info.includes("valparaíso") ||
-                        info.includes("valparaiso") ||
-                        info.includes("viña del mar") ||
-                        info.includes("quilpué") ||
-                        info.includes("quilpue") ||
-                        info.includes("villa alemana") ||
-                        info.includes("limache") ||
-                        info.includes("concón") ||
-                        info.includes("concon") ||
-                        info.includes("quillota") ||
-                        info.includes("san antonio")
-                    );
-                });
+                    const regionValida = [
+                        "valparaíso",
+                        "valparaiso",
+                        "viña del mar",
+                        "quilpué",
+                        "quilpue",
+                        "villa alemana",
+                        "limache",
+                        "concón",
+                        "concon",
+                        "quillota",
+                        "san antonio"
+                    ].some(nombre => informacion.includes(nombre));
 
-                lugares.forEach(lugar => {
-                    const p = lugar.properties || {};
+                    if (!regionValida) return;
 
                     const direccion = [
                         p.name,
@@ -283,85 +465,128 @@ function configurarBuscador(input, lista) {
                         "Chile"
                     ].filter(Boolean).join(", ");
 
-                    const boton = document.createElement("button");
-                    boton.type = "button";
-                    boton.className = "sugerencia";
-                    boton.textContent = direccion;
+                    encontrados.push(direccion);
 
-                    boton.addEventListener("click", () => {
-                        input.value = direccion;
-                        lista.style.display = "none";
-                        lista.replaceChildren();
-                        estado.textContent = "";
-                    });
-
-                    lista.appendChild(boton);
                 });
 
-                if (lugares.length > 0) {
-                    lista.style.display = "block";
-                    estado.textContent = "";
-                } else {
-                    estado.textContent =
-                        "Sin sugerencias. Puedes escribir la dirección completa.";
-                }
+                cache.set(consulta, encontrados);
+
+                mostrarSugerencias(
+                    input,
+                    lista,
+                    [...locales, ...encontrados]
+                );
 
             } catch (error) {
+
                 if (error.name !== "AbortError") {
-                    lista.style.display = "none";
-                    estado.textContent =
-                        "No se pudieron cargar sugerencias. Puedes escribir manualmente.";
+
+                    // CONSERVAR SUGERENCIAS LOCALES
+
+                    if (numeroBusqueda === busquedaActual) {
+
+                        mostrarSugerencias(
+                            input,
+                            lista,
+                            locales
+                        );
+
+                    }
+
                 }
+
             }
-        }, 500);
+
+        }, 200);
 
         temporizadores.set(input, temporizador);
+
     });
+
 }
 
+
+// ACTIVAR BUSCADORES
+
 configurarBuscador(origen, sugerenciasOrigen);
+
 configurarBuscador(destino, sugerenciasDestino);
 
-// CERRAR SUGERENCIAS
+
+// CERRAR LISTAS
+
 document.addEventListener("click", evento => {
+
     if (!evento.target.closest(".buscador")) {
+
         sugerenciasOrigen.style.display = "none";
+
         sugerenciasDestino.style.display = "none";
+
     }
+
 });
 
-// INVERTIR
+
+// INVERTIR DIRECCIONES
+
 document.getElementById("invertir").onclick = () => {
+
     const temporal = origen.value;
+
     origen.value = destino.value;
+
     destino.value = temporal;
 
     sugerenciasOrigen.style.display = "none";
+
     sugerenciasDestino.style.display = "none";
+
 };
+
 
 // LIMPIAR
+
 document.getElementById("limpiar").onclick = () => {
+
     origen.value = "";
+
     destino.value = "";
+
     reloj.style.display = "none";
+
     sugerenciasOrigen.style.display = "none";
+
     sugerenciasDestino.style.display = "none";
+
     estado.textContent = "";
+
 };
 
+
 // PLANIFICAR VIAJE
+
 document.getElementById("planificar").onclick = () => {
+
     const o = origen.value.trim();
+
     const d = destino.value.trim();
 
     if (!o || !d) {
+
         alert("Escribe el origen y el destino.");
+
         return;
+
     }
 
+    // MOSTRAR RELOJ
+
     reloj.style.display = "block";
+
     hora();
+
+    // ABRIR GOOGLE MAPS EN TRANSPORTE PÚBLICO
 
     const url =
         "https://www.google.com/maps/dir/?api=1" +
@@ -369,8 +594,14 @@ document.getElementById("planificar").onclick = () => {
         "&destination=" + encodeURIComponent(d) +
         "&travelmode=transit";
 
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
 };
+
 </script>
 
 </body>

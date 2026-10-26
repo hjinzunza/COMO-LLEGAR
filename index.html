@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PLAYA TRANSPORTE</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#081b2a;color:#fff;font-family:Arial,sans-serif}header{padding:23px 12px;text-align:center;background:#12354a;border-bottom:3px solid #00cfe8}h1{font-size:clamp(24px,5vw,34px);color:#62edff;margin:0}main{max-width:620px;margin:24px auto;padding:0 15px}.box{background:#153449;padding:22px;border-radius:18px}h2{margin:0 0 18px;color:#75eaff;font-size:21px}label{display:block;font-weight:bold;margin:15px 0 8px}input,button{display:block;width:100%;padding:15px;font-size:17px;border-radius:10px}input{border:1px solid #83a4b7;background:#071e2c;color:white}button{border:0;background:#00cfe8;color:#062533;font-weight:bold;margin-top:12px;cursor:pointer}.secondary{background:#315a70;color:white}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row button{font-size:14px}#clockBox{text-align:center;background:#092637;border-radius:12px;margin-top:18px;padding:14px}#clock{font-size:clamp(30px,8vw,46px);font-weight:bold;color:#77eeff}#status{font-size:14px;color:#d7e9f0;line-height:1.5}#status:empty{display:none}[hidden]{display:none!important}@media(max-width:480px){.row{grid-template-columns:1fr}.box{padding:17px}}
+</style>
+</head>
+<body><header><h1>🚌🚆 PLAYA TRANSPORTE</h1></header>
+<main><section class="box"><h2>📍 Planificador de viaje</h2>
+<button id="gpsButton" type="button">📍 Usar mi ubicación</button>
+<label for="origin">Origen</label><input id="origin" placeholder="Ej.: Recreo, Viña del Mar" list="locations">
+<label for="destination">Destino o dirección</label><input id="destination" placeholder="Ej.: Plaza Sotomayor, Valparaíso" list="locations">
+<datalist id="locations"><option value="Viña del Mar, Chile"><option value="Valparaíso, Chile"><option value="Recreo, Viña del Mar, Chile"><option value="Concón, Chile"><option value="Quilpué, Chile"><option value="Villa Alemana, Chile"><option value="Limache, Chile"><option value="Quillota, Chile"><option value="La Calera, Chile"><option value="Plaza Sotomayor, Valparaíso, Chile"></datalist>
+<div class="row"><button id="swap" class="secondary" type="button">⇅ Invertir</button><button id="clear" class="secondary" type="button">✕ Limpiar</button></div>
+<button id="plan" type="button">🗺️ PLANIFICAR VIAJE</button>
+<p id="status" role="status"></p>
+<div id="clockBox" hidden><div id="clock"></div></div>
+</section></main>
+<script>
+(function(){
+'use strict';
+var origin=document.getElementById('origin'),destination=document.getElementById('destination'),status=document.getElementById('status'),clockBox=document.getElementById('clockBox'),clock=document.getElementById('clock');
+var coords=null;
+function tick(){try{clock.textContent=new Intl.DateTimeFormat('es-CL',{timeZone:'America/Santiago',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());}catch(e){clock.textContent=new Date().toLocaleTimeString();}}
+function refresh(){clockBox.hidden=!(origin.value.trim()&&destination.value.trim());if(!clockBox.hidden)tick();}
+setInterval(tick,1000);
+origin.addEventListener('input',function(){coords=null;refresh();});destination.addEventListener('input',refresh);
+document.getElementById('swap').onclick=function(){var a=origin.value;origin.value=destination.value;destination.value=a;coords=null;status.textContent='';refresh();};
+document.getElementById('clear').onclick=function(){origin.value='';destination.value='';coords=null;status.textContent='';refresh();};
+document.getElementById('gpsButton').onclick=function(){
+ if(!navigator.geolocation){status.textContent='GPS no disponible. Escribe el origen o deja Origen vacío para que Google Maps use tu ubicación.';return;}
+ status.textContent='Buscando ubicación…';
+ navigator.geolocation.getCurrentPosition(function(p){coords=p.coords.latitude+','+p.coords.longitude;origin.value='Mi ubicación';status.textContent='Ubicación obtenida';refresh();},function(){coords=null;origin.value='';status.textContent='Este navegador bloquea el GPS. Puedes escribir el origen o dejarlo vacío para usar tu ubicación desde Google Maps.';refresh();},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+};
+document.getElementById('plan').onclick=function(){
+ var d=destination.value.trim(),o=origin.value.trim();
+ if(!d){status.textContent='Escribe un destino.';destination.focus();return;}
+ var url='https://www.google.com/maps/dir/?api=1&travelmode=transit&destination='+encodeURIComponent(d);
+ if(coords&&o==='Mi ubicación'){url+='&origin='+encodeURIComponent(coords);}else if(o&&o!=='Mi ubicación'){url+='&origin='+encodeURIComponent(o);}
+ status.textContent='Abriendo Google Maps…';
+ window.location.href=url;
+};
+refresh();
+})();
+</script>
+</body></html>

@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>PLAYA TRANSPORTE</title>
+<title>PLAYA TRANSPORTE V14.5</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -38,6 +35,10 @@ label {
     font-weight: bold;
 }
 
+.buscador {
+    position: relative;
+}
+
 input {
     width: 100%;
     padding: 15px;
@@ -46,6 +47,39 @@ input {
     font-size: 17px;
     background: white;
     color: #172b3c;
+}
+
+.sugerencias {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    color: #172b3c;
+    border-radius: 9px;
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 5px 15px #0006;
+}
+
+.sugerencia {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-bottom: 1px solid #ddd;
+    background: white;
+    color: #172b3c;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.sugerencia:hover,
+.sugerencia:focus {
+    background: #dff8fc;
 }
 
 button {
@@ -76,17 +110,6 @@ nav button {
     margin-top: 12px;
 }
 
-#gps {
-    background: #36556c;
-    color: white;
-    margin-bottom: 9px;
-    width: 100%;
-}
-
-#gps:disabled {
-    opacity: 0.65;
-}
-
 #reloj {
     display: none;
     text-align: center;
@@ -101,36 +124,6 @@ nav button {
     font-size: 14px;
     min-height: 20px;
     margin-top: 10px;
-}
-
-.buscador {
-    position: relative;
-}
-
-.sugerencias {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    color: #172b3c;
-    border-radius: 9px;
-    max-height: 250px;
-    overflow-y: auto;
-    z-index: 100;
-    box-shadow: 0 5px 15px #0006;
-}
-
-.sugerencia {
-    padding: 13px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.sugerencia:hover {
-    background: #dff8fc;
 }
 
 @media(max-width: 600px) {
@@ -153,26 +146,20 @@ nav button {
 <h1>🚌🚆 PLAYA TRANSPORTE</h1>
 
 <label for="origen">ORIGEN</label>
-
-<button id="gps" type="button">
-📍 MI UBICACIÓN
-</button>
-
 <div class="buscador">
     <input
         id="origen"
-        placeholder="Escribe calle o lugar de origen"
+        placeholder="Escribe calle, dirección o lugar"
         autocomplete="off"
     >
     <div id="sugerenciasOrigen" class="sugerencias"></div>
 </div>
 
 <label for="destino">DESTINO</label>
-
 <div class="buscador">
     <input
         id="destino"
-        placeholder="Escribe calle o lugar de destino"
+        placeholder="Escribe tu destino"
         autocomplete="off"
     >
     <div id="sugerenciasDestino" class="sugerencias"></div>
@@ -181,17 +168,12 @@ nav button {
 <div id="estado" role="status"></div>
 
 <nav>
-    <button id="invertir" type="button">
-        ⇄ INVERTIR
-    </button>
-
-    <button id="limpiar" type="button">
-        ✕ LIMPIAR
-    </button>
+    <button id="invertir" type="button">⇄ INVERTIR</button>
+    <button id="limpiar" type="button">✕ LIMPIAR</button>
 </nav>
 
 <button class="primary" id="planificar" type="button">
-🗺️ PLANIFICAR VIAJE
+    🗺️ PLANIFICAR VIAJE
 </button>
 
 <div id="reloj"></div>
@@ -199,22 +181,17 @@ nav button {
 </main>
 
 <script>
-
 const origen = document.getElementById("origen");
 const destino = document.getElementById("destino");
 const reloj = document.getElementById("reloj");
 const estado = document.getElementById("estado");
-const gps = document.getElementById("gps");
 
 const sugerenciasOrigen =
     document.getElementById("sugerenciasOrigen");
-
 const sugerenciasDestino =
     document.getElementById("sugerenciasDestino");
 
-
 // RELOJ DE CHILE
-
 function hora() {
     reloj.textContent = new Intl.DateTimeFormat("es-CL", {
         timeZone: "America/Santiago",
@@ -224,215 +201,15 @@ function hora() {
         hour12: false
     }).format(new Date());
 }
-
 setInterval(hora, 1000);
 hora();
 
-
-// GPS ALTA PRECISIÓN - OBJETIVO 5 METROS
-
-let seguimientoGPS = null;
-let temporizadorGPS = null;
-let mejorPosicion = null;
-let gpsActivo = false;
-
-const PRECISION_OBJETIVO = 5;
-const TIEMPO_MAXIMO = 20000;
-
-function detenerGPS() {
-    if (seguimientoGPS !== null) {
-        navigator.geolocation.clearWatch(seguimientoGPS);
-        seguimientoGPS = null;
-    }
-
-    clearTimeout(temporizadorGPS);
-    temporizadorGPS = null;
-    gpsActivo = false;
-    gps.disabled = false;
-}
-
-async function convertirDireccion(posicion) {
-
-    const lat = posicion.coords.latitude;
-    const lon = posicion.coords.longitude;
-
-    const url =
-        "https://nominatim.openstreetmap.org/reverse" +
-        "?format=jsonv2" +
-        "&addressdetails=1" +
-        "&zoom=18" +
-        "&lat=" + encodeURIComponent(lat) +
-        "&lon=" + encodeURIComponent(lon);
-
-    const respuesta = await fetch(url, {
-        headers: {
-            "Accept": "application/json",
-            "Accept-Language": "es"
-        }
-    });
-
-    if (!respuesta.ok) {
-        throw new Error("No se pudo consultar la dirección");
-    }
-
-    const datos = await respuesta.json();
-    const a = datos.address || {};
-
-    const calle =
-        a.road ||
-        a.pedestrian ||
-        a.residential ||
-        a.neighbourhood ||
-        a.suburb ||
-        "";
-
-    const numero = a.house_number || "";
-
-    const comuna =
-        a.city ||
-        a.town ||
-        a.village ||
-        a.municipality ||
-        a.county ||
-        "";
-
-    const region = a.state || "";
-
-    if (!calle && !comuna) {
-        throw new Error("Dirección no encontrada");
-    }
-
-    return [
-        [calle, numero].filter(Boolean).join(" "),
-        comuna,
-        region,
-        "Chile"
-    ].filter(Boolean).join(", ");
-}
-
-async function finalizarGPS() {
-
-    if (!gpsActivo) return;
-
-    const posicion = mejorPosicion;
-
-    detenerGPS();
-
-    if (!posicion) {
-        estado.textContent =
-            "No se obtuvo ubicación. Escribe tu dirección.";
-        return;
-    }
-
-    const precision = Math.round(
-        posicion.coords.accuracy
-    );
-
-    estado.textContent =
-        "Buscando dirección... Precisión GPS: ±" +
-        precision + " m";
-
-    try {
-
-        const direccion =
-            await convertirDireccion(posicion);
-
-        // MOSTRAR SOLO DIRECCIÓN EN TEXTO
-        origen.value = direccion;
-
-        estado.textContent =
-            "📍 Precisión GPS: ±" +
-            precision +
-            " m. Verifica la dirección.";
-
-    } catch (error) {
-
-        estado.textContent =
-            "No se encontró la dirección. Escríbela manualmente.";
-
-    }
-}
-
-gps.onclick = () => {
-
-    if (!navigator.geolocation) {
-        estado.textContent = "GPS no disponible.";
-        return;
-    }
-
-    if (gpsActivo) return;
-
-    gpsActivo = true;
-    gps.disabled = true;
-    mejorPosicion = null;
-
-    estado.textContent =
-        "📡 Buscando ubicación precisa (objetivo ±5 m)...";
-
-    seguimientoGPS =
-        navigator.geolocation.watchPosition(
-
-            posicion => {
-
-                const precision =
-                    posicion.coords.accuracy;
-
-                if (
-                    !mejorPosicion ||
-                    precision <
-                    mejorPosicion.coords.accuracy
-                ) {
-                    mejorPosicion = posicion;
-                }
-
-                estado.textContent =
-                    "📡 Precisión actual: ±" +
-                    Math.round(precision) +
-                    " m. Objetivo: ±5 m.";
-
-                if (precision <= PRECISION_OBJETIVO) {
-                    finalizarGPS();
-                }
-
-            },
-
-            error => {
-
-                if (mejorPosicion) {
-                    finalizarGPS();
-                } else {
-                    detenerGPS();
-
-                    estado.textContent =
-                        "No se pudo obtener ubicación. " +
-                        "Revisa los permisos del GPS.";
-                }
-
-            },
-
-            {
-                enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 15000
-            }
-        );
-
-    temporizadorGPS = setTimeout(() => {
-        finalizarGPS();
-    }, TIEMPO_MAXIMO);
-
-};
-
-
-// BUSCADOR DE DIRECCIONES
-
+// BUSCADOR AUTOMÁTICO
 const temporizadores = new Map();
 const controladores = new Map();
 
 function configurarBuscador(input, lista) {
-
     input.addEventListener("input", () => {
-
         clearTimeout(temporizadores.get(input));
 
         const anterior = controladores.get(input);
@@ -442,24 +219,19 @@ function configurarBuscador(input, lista) {
         lista.replaceChildren();
 
         const texto = input.value.trim();
-
         if (texto.length < 3) return;
 
         const temporizador = setTimeout(async () => {
-
             const controlador = new AbortController();
             controladores.set(input, controlador);
 
             try {
-
-                // BÚSQUEDA ORIENTADA A VALPARAÍSO
                 const url =
                     "https://photon.komoot.io/api/" +
                     "?q=" + encodeURIComponent(texto) +
-                    "&lat=-33.0458" +
-                    "&lon=-71.6197" +
-                    "&limit=12" +
-                    "&lang=es";
+                    "&lat=-33.0245" +
+                    "&lon=-71.5518" +
+                    "&limit=15";
 
                 const respuesta = await fetch(url, {
                     signal: controlador.signal
@@ -471,39 +243,36 @@ function configurarBuscador(input, lista) {
 
                 const datos = await respuesta.json();
 
+                if (input.value.trim() !== texto) return;
+
                 lista.replaceChildren();
 
-                const lugares = (datos.features || [])
-                    .filter(lugar => {
+                const lugares = (datos.features || []).filter(lugar => {
+                    const p = lugar.properties || {};
+                    const info = [
+                        p.state,
+                        p.county,
+                        p.city,
+                        p.district
+                    ].filter(Boolean).join(" ").toLowerCase();
 
-                        const p = lugar.properties || {};
-
-                        const informacion = [
-                            p.state,
-                            p.county,
-                            p.city,
-                            p.district
-                        ].filter(Boolean).join(" ").toLowerCase();
-
-                        return (
-                            informacion.includes("valparaíso") ||
-                            informacion.includes("valparaiso") ||
-                            informacion.includes("viña del mar") ||
-                            informacion.includes("quilpué") ||
-                            informacion.includes("quilpue") ||
-                            informacion.includes("villa alemana") ||
-                            informacion.includes("limache") ||
-                            informacion.includes("concón") ||
-                            informacion.includes("concon") ||
-                            informacion.includes("quillota") ||
-                            informacion.includes("san antonio")
-                        );
-
-                    });
+                    return (
+                        info.includes("valparaíso") ||
+                        info.includes("valparaiso") ||
+                        info.includes("viña del mar") ||
+                        info.includes("quilpué") ||
+                        info.includes("quilpue") ||
+                        info.includes("villa alemana") ||
+                        info.includes("limache") ||
+                        info.includes("concón") ||
+                        info.includes("concon") ||
+                        info.includes("quillota") ||
+                        info.includes("san antonio")
+                    );
+                });
 
                 lugares.forEach(lugar => {
-
-                    const p = lugar.properties;
+                    const p = lugar.properties || {};
 
                     const direccion = [
                         p.name,
@@ -514,130 +283,94 @@ function configurarBuscador(input, lista) {
                         "Chile"
                     ].filter(Boolean).join(", ");
 
-                    const elemento =
-                        document.createElement("div");
+                    const boton = document.createElement("button");
+                    boton.type = "button";
+                    boton.className = "sugerencia";
+                    boton.textContent = direccion;
 
-                    elemento.className = "sugerencia";
-                    elemento.textContent = direccion;
-
-                    elemento.onclick = () => {
-
+                    boton.addEventListener("click", () => {
                         input.value = direccion;
-
                         lista.style.display = "none";
                         lista.replaceChildren();
+                        estado.textContent = "";
+                    });
 
-                    };
-
-                    lista.appendChild(elemento);
-
+                    lista.appendChild(boton);
                 });
 
                 if (lugares.length > 0) {
                     lista.style.display = "block";
+                    estado.textContent = "";
+                } else {
+                    estado.textContent =
+                        "Sin sugerencias. Puedes escribir la dirección completa.";
                 }
 
             } catch (error) {
-
                 if (error.name !== "AbortError") {
                     lista.style.display = "none";
+                    estado.textContent =
+                        "No se pudieron cargar sugerencias. Puedes escribir manualmente.";
                 }
-
             }
-
-        }, 450);
+        }, 500);
 
         temporizadores.set(input, temporizador);
-
     });
-
 }
 
 configurarBuscador(origen, sugerenciasOrigen);
 configurarBuscador(destino, sugerenciasDestino);
 
-
 // CERRAR SUGERENCIAS
-
 document.addEventListener("click", evento => {
-
     if (!evento.target.closest(".buscador")) {
-
         sugerenciasOrigen.style.display = "none";
         sugerenciasDestino.style.display = "none";
-
     }
-
 });
 
-
 // INVERTIR
-
 document.getElementById("invertir").onclick = () => {
-
     const temporal = origen.value;
-
     origen.value = destino.value;
     destino.value = temporal;
 
     sugerenciasOrigen.style.display = "none";
     sugerenciasDestino.style.display = "none";
-
 };
-
 
 // LIMPIAR
-
 document.getElementById("limpiar").onclick = () => {
-
-    detenerGPS();
-
     origen.value = "";
     destino.value = "";
-
     reloj.style.display = "none";
-
     sugerenciasOrigen.style.display = "none";
     sugerenciasDestino.style.display = "none";
-
     estado.textContent = "";
-
 };
 
-
 // PLANIFICAR VIAJE
-
 document.getElementById("planificar").onclick = () => {
-
     const o = origen.value.trim();
     const d = destino.value.trim();
 
     if (!o || !d) {
-
         alert("Escribe el origen y el destino.");
         return;
-
     }
 
     reloj.style.display = "block";
     hora();
 
-    // DIRECCIONES EN TEXTO, SIN COORDENADAS
     const url =
         "https://www.google.com/maps/dir/?api=1" +
         "&origin=" + encodeURIComponent(o) +
         "&destination=" + encodeURIComponent(d) +
         "&travelmode=transit";
 
-    // ABRIR GOOGLE MAPS DIRECTAMENTE
-    window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-    );
-
+    window.open(url, "_blank", "noopener,noreferrer");
 };
-
 </script>
 
 </body>

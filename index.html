@@ -1,48 +1,355 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAYA TRANSPORTE</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#081b2a;color:#fff;font-family:Arial,sans-serif}header{padding:23px 12px;text-align:center;background:#12354a;border-bottom:3px solid #00cfe8}h1{font-size:clamp(24px,5vw,34px);color:#62edff;margin:0}main{max-width:620px;margin:24px auto;padding:0 15px}.box{background:#153449;padding:22px;border-radius:18px}h2{margin:0 0 18px;color:#75eaff;font-size:21px}label{display:block;font-weight:bold;margin:15px 0 8px}input,button{display:block;width:100%;padding:15px;font-size:17px;border-radius:10px}input{border:1px solid #83a4b7;background:#071e2c;color:white}button{border:0;background:#00cfe8;color:#062533;font-weight:bold;margin-top:12px;cursor:pointer}.secondary{background:#315a70;color:white}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row button{font-size:14px}#clockBox{text-align:center;background:#092637;border-radius:12px;margin-top:18px;padding:14px}#clock{font-size:clamp(30px,8vw,46px);font-weight:bold;color:#77eeff}#status{font-size:14px;color:#d7e9f0;line-height:1.5}#status:empty{display:none}[hidden]{display:none!important}@media(max-width:480px){.row{grid-template-columns:1fr}.box{padding:17px}}
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #0e1a27;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+main {
+    max-width: 720px;
+    margin: 35px auto;
+    padding: 24px;
+    background: #172b3c;
+    border-radius: 18px;
+}
+
+h1 {
+    text-align: center;
+    color: #35d9ef;
+    font-size: 29px;
+}
+
+label {
+    display: block;
+    margin: 18px 0 7px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #7e9aaa;
+    border-radius: 9px;
+    font-size: 17px;
+}
+
+button {
+    cursor: pointer;
+    border: 0;
+    border-radius: 9px;
+    padding: 14px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+nav {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+nav button {
+    flex: 1;
+    background: #36556c;
+    color: white;
+}
+
+.primary {
+    background: #17c5df;
+    color: #06202a;
+    width: 100%;
+    margin-top: 12px;
+}
+
+#gps {
+    background: #36556c;
+    color: white;
+    margin-bottom: 9px;
+    width: 100%;
+}
+
+#reloj {
+    display: none;
+    text-align: center;
+    font-size: 29px;
+    margin: 18px 0;
+}
+
+#mapa {
+    display: none;
+    margin-top: 18px;
+    width: 100%;
+    height: 360px;
+    border: 0;
+    border-radius: 12px;
+}
+
+#estado {
+    color: #b8d6e3;
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: 8px;
+}
 </style>
 </head>
-<body><header><h1>🚌🚆 PLAYA TRANSPORTE</h1></header>
-<main><section class="box"><h2>📍 Planificador de viaje</h2>
-<button id="gpsButton" type="button">📍 Usar mi ubicación</button>
-<label for="origin">Origen</label><input id="origin" placeholder="Ej.: Recreo, Viña del Mar" list="locations">
-<label for="destination">Destino o dirección</label><input id="destination" placeholder="Ej.: Plaza Sotomayor, Valparaíso" list="locations">
-<datalist id="locations"><option value="Viña del Mar, Chile"><option value="Valparaíso, Chile"><option value="Recreo, Viña del Mar, Chile"><option value="Concón, Chile"><option value="Quilpué, Chile"><option value="Villa Alemana, Chile"><option value="Limache, Chile"><option value="Quillota, Chile"><option value="La Calera, Chile"><option value="Plaza Sotomayor, Valparaíso, Chile"></datalist>
-<div class="row"><button id="swap" class="secondary" type="button">⇅ Invertir</button><button id="clear" class="secondary" type="button">✕ Limpiar</button></div>
-<button id="plan" type="button">🗺️ PLANIFICAR VIAJE</button>
-<p id="status" role="status"></p>
-<div id="clockBox" hidden><div id="clock"></div></div>
-</section></main>
+
+<body>
+
+<main>
+
+<h1>🚌🚆 PLAYA TRANSPORTE</h1>
+
+<label for="origen">ORIGEN</label>
+
+<button id="gps" type="button">
+📍 MI UBICACIÓN
+</button>
+
+<input
+    id="origen"
+    placeholder="Escribe tu dirección"
+    autocomplete="street-address"
+>
+
+<label for="destino">DESTINO</label>
+
+<input
+    id="destino"
+    placeholder="Escribe tu destino"
+>
+
+<div id="estado" role="status"></div>
+
+<nav>
+    <button id="invertir" type="button">
+        ⇄ INVERTIR
+    </button>
+
+    <button id="limpiar" type="button">
+        ✕ LIMPIAR
+    </button>
+</nav>
+
+<button class="primary" id="planificar" type="button">
+🗺️ PLANIFICAR VIAJE
+</button>
+
+<div id="reloj"></div>
+
+<iframe
+    id="mapa"
+    title="Mapa del destino"
+    loading="lazy">
+</iframe>
+
+</main>
+
 <script>
-(function(){
-'use strict';
-var origin=document.getElementById('origin'),destination=document.getElementById('destination'),status=document.getElementById('status'),clockBox=document.getElementById('clockBox'),clock=document.getElementById('clock');
-var coords=null;
-function tick(){try{clock.textContent=new Intl.DateTimeFormat('es-CL',{timeZone:'America/Santiago',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());}catch(e){clock.textContent=new Date().toLocaleTimeString();}}
-function refresh(){clockBox.hidden=!(origin.value.trim()&&destination.value.trim());if(!clockBox.hidden)tick();}
-setInterval(tick,1000);
-origin.addEventListener('input',function(){coords=null;refresh();});destination.addEventListener('input',refresh);
-document.getElementById('swap').onclick=function(){var a=origin.value;origin.value=destination.value;destination.value=a;coords=null;status.textContent='';refresh();};
-document.getElementById('clear').onclick=function(){origin.value='';destination.value='';coords=null;status.textContent='';refresh();};
-document.getElementById('gpsButton').onclick=function(){
- if(!navigator.geolocation){status.textContent='GPS no disponible. Escribe el origen o deja Origen vacío para que Google Maps use tu ubicación.';return;}
- status.textContent='Buscando ubicación…';
- navigator.geolocation.getCurrentPosition(function(p){coords=p.coords.latitude+','+p.coords.longitude;origin.value='Mi ubicación';status.textContent='Ubicación obtenida';refresh();},function(){coords=null;origin.value='';status.textContent='Este navegador bloquea el GPS. Puedes escribir el origen o dejarlo vacío para usar tu ubicación desde Google Maps.';refresh();},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+
+const origen = document.getElementById("origen");
+const destino = document.getElementById("destino");
+const reloj = document.getElementById("reloj");
+const mapa = document.getElementById("mapa");
+const estado = document.getElementById("estado");
+const gps = document.getElementById("gps");
+
+// RELOJ DE CHILE
+
+function hora() {
+    reloj.textContent = new Intl.DateTimeFormat("es-CL", {
+        timeZone: "America/Santiago",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(new Date());
+}
+
+setInterval(hora, 1000);
+hora();
+
+// GPS CON DIRECCIÓN EN TEXTO
+
+gps.onclick = () => {
+
+    if (!navigator.geolocation) {
+        estado.textContent = "GPS no disponible.";
+        return;
+    }
+
+    gps.disabled = true;
+    estado.textContent = "Buscando tu dirección...";
+
+    navigator.geolocation.getCurrentPosition(
+
+        async posicion => {
+
+            try {
+
+                const lat = posicion.coords.latitude;
+                const lon = posicion.coords.longitude;
+
+                const url =
+                    "https://nominatim.openstreetmap.org/reverse" +
+                    "?format=jsonv2" +
+                    "&addressdetails=1" +
+                    "&zoom=18" +
+                    "&lat=" + encodeURIComponent(lat) +
+                    "&lon=" + encodeURIComponent(lon);
+
+                const respuesta = await fetch(url, {
+                    headers: {
+                        "Accept": "application/json",
+                        "Accept-Language": "es"
+                    }
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error("Servicio no disponible");
+                }
+
+                const datos = await respuesta.json();
+                const a = datos.address || {};
+
+                const calle =
+                    a.road ||
+                    a.pedestrian ||
+                    a.neighbourhood ||
+                    a.suburb ||
+                    "";
+
+                const numero = a.house_number || "";
+
+                const comuna =
+                    a.city ||
+                    a.town ||
+                    a.village ||
+                    a.municipality ||
+                    a.county ||
+                    "";
+
+                const region = a.state || "";
+
+                if (!calle && !comuna) {
+                    throw new Error("Dirección no encontrada");
+                }
+
+                const direccion = [
+                    [calle, numero].filter(Boolean).join(" "),
+                    comuna,
+                    region,
+                    "Chile"
+                ].filter(Boolean).join(", ");
+
+                // SOLO SE MUESTRA TEXTO
+                origen.value = direccion;
+
+                estado.textContent =
+                    "Ubicación aproximada. Puedes corregir la dirección.";
+
+            } catch (error) {
+
+                estado.textContent =
+                    "No se encontró la dirección. Escríbela manualmente.";
+
+            } finally {
+                gps.disabled = false;
+            }
+
+        },
+
+        error => {
+
+            gps.disabled = false;
+
+            estado.textContent =
+                "No se pudo acceder al GPS. Escribe tu origen.";
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 12000,
+            maximumAge: 30000
+        }
+
+    );
+
 };
-document.getElementById('plan').onclick=function(){
- var d=destination.value.trim(),o=origin.value.trim();
- if(!d){status.textContent='Escribe un destino.';destination.focus();return;}
- var url='https://www.google.com/maps/dir/?api=1&travelmode=transit&destination='+encodeURIComponent(d);
- if(coords&&o==='Mi ubicación'){url+='&origin='+encodeURIComponent(coords);}else if(o&&o!=='Mi ubicación'){url+='&origin='+encodeURIComponent(o);}
- status.textContent='Abriendo Google Maps…';
- window.location.href=url;
+
+// INVERTIR DIRECCIONES
+
+document.getElementById("invertir").onclick = () => {
+
+    const temporal = origen.value;
+
+    origen.value = destino.value;
+    destino.value = temporal;
+
 };
-refresh();
-})();
+
+// LIMPIAR
+
+document.getElementById("limpiar").onclick = () => {
+
+    origen.value = "";
+    destino.value = "";
+
+    reloj.style.display = "none";
+    mapa.style.display = "none";
+
+    mapa.removeAttribute("src");
+
+    estado.textContent = "";
+
+};
+
+// PLANIFICAR VIAJE
+
+document.getElementById("planificar").onclick = () => {
+
+    const o = origen.value.trim();
+    const d = destino.value.trim();
+
+    if (!o || !d) {
+        alert("Escribe el origen y el destino.");
+        return;
+    }
+
+    // MOSTRAR RELOJ
+    reloj.style.display = "block";
+    hora();
+
+    // MOSTRAR MAPA DEL DESTINO
+    mapa.src =
+        "https://maps.google.com/maps?q=" +
+        encodeURIComponent(d) +
+        "&output=embed";
+
+    mapa.style.display = "block";
+
+    // GOOGLE MAPS EN TRANSPORTE PÚBLICO
+    const url =
+        "https://www.google.com/maps/dir/?api=1" +
+        "&origin=" + encodeURIComponent(o) +
+        "&destination=" + encodeURIComponent(d) +
+        "&travelmode=transit";
+
+    window.open(url, "_blank", "noopener,noreferrer");
+
+};
+
 </script>
-</body></html>
+
+</body>
+</html>

@@ -1,608 +1,322 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0e1a27">
-<title>COMO LLEGAR</title>
-
+<title>CÓMO LLEGAR</title>
 <style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: #0e1a27;
-    color: white;
-    font-family: Arial, sans-serif;
-}
-
-main {
-    max-width: 720px;
-    margin: 35px auto;
-    padding: 24px;
-    background: #172b3c;
-    border-radius: 18px;
-}
-
-h1 {
-    text-align: center;
-    color: #35d9ef;
-    font-size: 29px;
-}
-
-label {
-    display: block;
-    margin: 18px 0 7px;
-    font-weight: bold;
-}
-
-.buscador {
-    position: relative;
-}
-
-input {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #7e9aaa;
-    border-radius: 9px;
-    font-size: 17px;
-    background: white;
-    color: #172b3c;
-}
-
-.sugerencias {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    color: #172b3c;
-    border-radius: 9px;
-    max-height: 260px;
-    overflow-y: auto;
-    z-index: 100;
-    box-shadow: 0 5px 15px #0006;
-}
-
-.sugerencia {
-    display: block;
-    width: 100%;
-    padding: 13px;
-    border: 0;
-    border-bottom: 1px solid #ddd;
-    background: white;
-    color: #172b3c;
-    text-align: left;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.sugerencia:hover,
-.sugerencia:focus {
-    background: #dff8fc;
-}
-
-button {
-    cursor: pointer;
-    border: 0;
-    border-radius: 9px;
-    padding: 14px;
-    font-weight: bold;
-    font-size: 16px;
-}
-
-nav {
-    display: flex;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-nav button {
-    flex: 1;
-    background: #36556c;
-    color: white;
-}
-
-.primary {
-    background: #17c5df;
-    color: #06202a;
-    width: 100%;
-    margin-top: 12px;
-}
-
-#reloj {
-    display: none;
-    text-align: center;
-    font-size: 32px;
-    margin: 20px 0;
-    color: #35d9ef;
-    font-weight: bold;
-}
-
-#estado {
-    color: #b8d6e3;
-    font-size: 14px;
-    min-height: 20px;
-    margin-top: 10px;
-}
-
-@media(max-width: 600px) {
-    main {
-        margin: 12px;
-        padding: 18px;
-    }
-
-    h1 {
-        font-size: 25px;
-    }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#0e1a27;color:#fff;font-family:Arial,sans-serif}
+main{max-width:720px;margin:35px auto;padding:24px;background:#172b3c;border-radius:18px}
+h1{text-align:center;color:#35d9ef;font-size:29px}
+label{display:block;margin:18px 0 7px;font-weight:bold}
+.buscador{position:relative}
+input{width:100%;padding:15px;border:1px solid #7e9aaa;border-radius:9px;font-size:17px;color:#172b3c}
+button{cursor:pointer;border:0;border-radius:9px;padding:14px;font-size:16px;font-weight:bold}
+nav{display:flex;gap:10px;margin:15px 0}
+nav button{flex:1;background:#36556c;color:white}
+.primary{background:#17c5df;color:#06202a;width:100%;margin-top:12px}
+#reloj{display:none;text-align:center;font-size:32px;margin:20px 0;color:#35d9ef;font-weight:bold}
+#estado{color:#b8d6e3;font-size:14px;min-height:20px;margin-top:10px}
+.sugerencias{display:none;position:absolute;top:100%;left:0;right:0;background:white;color:#172b3c;border-radius:9px;max-height:270px;overflow-y:auto;z-index:100;box-shadow:0 5px 15px #0006}
+.sugerencia{display:block;width:100%;padding:12px;border:0;border-bottom:1px solid #ddd;border-radius:0;background:white;color:#172b3c;text-align:left;font-size:15px;font-weight:normal}
+.sugerencia:hover,.sugerencia:focus{background:#dff8fc}
+@media(max-width:600px){main{margin:12px;padding:18px}h1{font-size:25px}}
 </style>
 </head>
-
 <body>
-
 <main>
-
-<h1>🚌 COMO LLEGAR 🚆</h1>
+<h1>🚌 CÓMO LLEGAR 🚆</h1>
 
 <label for="origen">ORIGEN</label>
-
 <div class="buscador">
-    <input
-        id="origen"
-        placeholder="Escribe calle, dirección o lugar"
-        autocomplete="off"
-    >
-    <div id="sugerenciasOrigen" class="sugerencias"></div>
+<input id="origen" placeholder="Escribe calle, dirección o lugar" autocomplete="off">
+<div id="sugerenciasOrigen" class="sugerencias"></div>
 </div>
 
 <label for="destino">DESTINO</label>
-
 <div class="buscador">
-    <input
-        id="destino"
-        placeholder="Escribe tu destino"
-        autocomplete="off"
-    >
-    <div id="sugerenciasDestino" class="sugerencias"></div>
+<input id="destino" placeholder="Escribe tu destino" autocomplete="off">
+<div id="sugerenciasDestino" class="sugerencias"></div>
 </div>
 
 <div id="estado" role="status"></div>
 
 <nav>
-    <button id="invertir" type="button">
-        ⇄ INVERTIR
-    </button>
-
-    <button id="limpiar" type="button">
-        ✕ LIMPIAR
-    </button>
+<button id="invertir" type="button">⇄ INVERTIR</button>
+<button id="limpiar" type="button">✕ LIMPIAR</button>
 </nav>
 
-<button class="primary" id="planificar" type="button">
-    🗺️ PLANIFICAR VIAJE
-</button>
-
+<button class="primary" id="planificar" type="button">🗺️ PLANIFICAR VIAJE</button>
 <div id="reloj"></div>
-
 </main>
 
 <script>
+const origen = document.getElementById('origen');
+const destino = document.getElementById('destino');
+const reloj = document.getElementById('reloj');
+const estado = document.getElementById('estado');
 
-// ELEMENTOS
-
-const origen = document.getElementById("origen");
-const destino = document.getElementById("destino");
-const reloj = document.getElementById("reloj");
-const estado = document.getElementById("estado");
-
-const sugerenciasOrigen =
-    document.getElementById("sugerenciasOrigen");
-
-const sugerenciasDestino =
-    document.getElementById("sugerenciasDestino");
-
-
-// RELOJ DE CHILE
-
-function hora() {
-
-    reloj.textContent = new Intl.DateTimeFormat("es-CL", {
-        timeZone: "America/Santiago",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    }).format(new Date());
-
+function hora(){
+  reloj.textContent = new Intl.DateTimeFormat('es-CL',{
+    timeZone:'America/Santiago',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',
+    hour12:false
+  }).format(new Date());
 }
-
-setInterval(hora, 1000);
+setInterval(hora,1000);
 hora();
 
+const lugares = [
+['Plaza Vergara','Viña del Mar'],
+['Reloj de Flores','Viña del Mar'],
+['Quinta Vergara','Viña del Mar'],
+['Terminal de Buses de Viña del Mar','Viña del Mar'],
+['Hospital Gustavo Fricke','Viña del Mar'],
+['Mall Marina','Viña del Mar'],
+['Avenida Libertad','Viña del Mar'],
+['Avenida Perú','Viña del Mar'],
+['Reñaca','Viña del Mar'],
+['Estación Viña del Mar','Viña del Mar'],
+['Estación Puerto','Valparaíso'],
+['Plaza Sotomayor','Valparaíso'],
+['Plaza Victoria','Valparaíso'],
+['Terminal Rodoviario','Valparaíso'],
+['Cerro Alegre','Valparaíso'],
+['Estación Quilpué','Quilpué'],
+['Estación Villa Alemana','Villa Alemana'],
+['Estación Limache','Limache'],
+['Plaza de Quillota','Quillota'],
+['Algarrobo','Algarrobo'],
+['La Calera','La Calera'],
+['La Ligua','La Ligua'],
+['Quintero','Quintero'],
+['Santiago','Santiago'],
+['Plaza de Armas','Santiago'],
+['Estación Central','Santiago'],
+['Terminal Alameda','Santiago'],
+['Aeropuerto Arturo Merino Benítez','Santiago'],
+['Providencia','Santiago'],
+['Puente Alto','Santiago'],
+['Maipú','Santiago'],
+['Valparaíso','Valparaíso'],
+['Viña del Mar','Viña del Mar'],
+['Rancagua','Región de O’Higgins'],
+['Talca','Región del Maule'],
+['Chillán','Región de Ñuble'],
+['Concepción','Región del Biobío'],
+['Temuco','Región de La Araucanía'],
+['Valdivia','Región de Los Ríos'],
+['Osorno','Región de Los Lagos'],
+['Puerto Montt','Región de Los Lagos'],
+['Coyhaique','Región de Aysén'],
+['Punta Arenas','Región de Magallanes'],
+['La Serena','Región de Coquimbo'],
+['Coquimbo','Región de Coquimbo'],
+['Copiapó','Región de Atacama'],
+['Antofagasta','Región de Antofagasta'],
+['Calama','Región de Antofagasta'],
+['Iquique','Región de Tarapacá'],
+['Arica','Región de Arica y Parinacota']
+].map(([nombre,comuna]) => `${nombre}, ${comuna}, Chile`);
 
-// LUGARES LOCALES DE LA QUINTA REGIÓN
-
-const lugaresLocales = [
-
-    "Plaza Vergara, Viña del Mar, Chile",
-    "Avenida Libertad, Viña del Mar, Chile",
-    "Avenida Perú, Viña del Mar, Chile",
-    "Playa Acapulco, Viña del Mar, Chile",
-    "Playa Caleta Abarca, Viña del Mar, Chile",
-    "Reloj de Flores, Viña del Mar, Chile",
-    "Quinta Vergara, Viña del Mar, Chile",
-    "Hospital Gustavo Fricke, Viña del Mar, Chile",
-    "Terminal de Buses de Viña del Mar, Chile",
-    "Estación Viña del Mar, Chile",
-    "Estación Miramar, Viña del Mar, Chile",
-    "Estación Recreo, Viña del Mar, Chile",
-    "Estación Chorrillos, Viña del Mar, Chile",
-    "Estación El Salto, Viña del Mar, Chile",
-    "Recreo, Viña del Mar, Chile",
-    "Miraflores, Viña del Mar, Chile",
-    "Achupallas, Viña del Mar, Chile",
-    "Reñaca, Viña del Mar, Chile",
-    "Concón, Región de Valparaíso, Chile",
-
-    "Plaza Sotomayor, Valparaíso, Chile",
-    "Plaza Victoria, Valparaíso, Chile",
-    "Plaza Aníbal Pinto, Valparaíso, Chile",
-    "Estación Puerto, Valparaíso, Chile",
-    "Estación Bellavista, Valparaíso, Chile",
-    "Estación Francia, Valparaíso, Chile",
-    "Estación Barón, Valparaíso, Chile",
-    "Terminal Rodoviario, Valparaíso, Chile",
-    "Avenida Argentina, Valparaíso, Chile",
-    "Cerro Alegre, Valparaíso, Chile",
-    "Cerro Concepción, Valparaíso, Chile",
-    "Playa Ancha, Valparaíso, Chile",
-    "Placilla, Valparaíso, Chile",
-
-    "Plaza de Quilpué, Quilpué, Chile",
-    "Estación Quilpué, Chile",
-    "Estación El Sol, Quilpué, Chile",
-    "Estación El Belloto, Quilpué, Chile",
-    "El Belloto, Quilpué, Chile",
-
-    "Plaza de Villa Alemana, Chile",
-    "Estación Villa Alemana, Chile",
-    "Estación La Concepción, Villa Alemana, Chile",
-    "Estación Peñablanca, Villa Alemana, Chile",
-
-    "Plaza de Limache, Chile",
-    "Estación Limache, Chile",
-    "Terminal de Buses de Limache, Chile",
-
-    "Plaza de Quillota, Chile",
-    "Terminal de Buses de Quillota, Chile",
-
-    "Plaza de San Antonio, Chile",
-    "Terminal de Buses de San Antonio, Chile"
-
-];
-
-
-// NORMALIZAR TEXTO
-
-function normalizar(texto) {
-
-    return texto
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .trim();
-
-}
-
-
-// CACHÉ DE BÚSQUEDAS
+const normalizar = s => s.normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'').toLowerCase();
 
 const cache = new Map();
+const estados = new Map();
 
-const temporizadores = new Map();
+function sugerir(input,lista){
+  const st = {timer:null,controller:null,version:0};
+  estados.set(input,st);
 
-const controladores = new Map();
-
-
-// MOSTRAR SUGERENCIAS
-
-function mostrarSugerencias(input, lista, resultados) {
-
+  function mostrar(resultados){
     lista.replaceChildren();
+    const vistos = new Set();
 
-    const unicos = [...new Set(resultados)];
+    resultados.forEach(d => {
+      const k = normalizar(d);
+      if(vistos.has(k)) return;
+      vistos.add(k);
 
-    unicos.slice(0, 12).forEach(direccion => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sugerencia';
+      b.textContent = d;
 
-        const boton = document.createElement("button");
+      b.onclick = () => {
+        input.value = d;
+        lista.style.display = 'none';
+        lista.replaceChildren();
+        estado.textContent = '';
+        st.version++;
+        clearTimeout(st.timer);
+        st.controller?.abort();
+      };
 
-        boton.type = "button";
-        boton.className = "sugerencia";
-        boton.textContent = direccion;
-
-        boton.onclick = () => {
-
-            input.value = direccion;
-
-            lista.style.display = "none";
-            lista.replaceChildren();
-
-            estado.textContent = "";
-
-        };
-
-        lista.appendChild(boton);
-
+      lista.appendChild(b);
     });
 
-    lista.style.display =
-        unicos.length > 0 ? "block" : "none";
+    lista.style.display = lista.children.length ? 'block' : 'none';
+  }
 
-}
+  input.addEventListener('input',() => {
+    const q = input.value.trim();
+    st.version++;
+    const version = st.version;
 
+    clearTimeout(st.timer);
+    st.controller?.abort();
 
-// BUSCADOR INTELIGENTE
+    if(q.length < 2){
+      lista.style.display = 'none';
+      lista.replaceChildren();
+      estado.textContent = '';
+      return;
+    }
 
-function configurarBuscador(input, lista) {
+    const local = lugares
+      .filter(x => normalizar(x).includes(normalizar(q)))
+      .slice(0,8);
 
-    let numeroBusqueda = 0;
+    const key = normalizar(q);
+    mostrar([...local,...(cache.get(key)||[])]);
 
-    input.addEventListener("input", () => {
+    if(q.length < 3) return;
 
-        numeroBusqueda++;
+    estado.textContent = 'Buscando direcciones en Chile…';
 
-        const busquedaActual = numeroBusqueda;
+    st.timer = setTimeout(async() => {
+      const ctrl = new AbortController();
+      st.controller = ctrl;
 
-        clearTimeout(temporizadores.get(input));
+      try{
+        let remotos = [];
 
-        const anterior = controladores.get(input);
+        try{
+          const url = 'https://photon.komoot.io/api/?q=' +
+            encodeURIComponent(q + ' Chile') + '&limit=20';
 
-        if (anterior) anterior.abort();
+          const r = await fetch(url,{signal:ctrl.signal});
+          if(!r.ok) throw Error('Error de búsqueda');
 
-        const texto = input.value.trim();
+          const data = await r.json();
 
-        lista.style.display = "none";
-        lista.replaceChildren();
+          remotos = (data.features||[]).map(f => {
+            const p = f.properties||{};
+            return [
+              p.name,
+              p.housenumber,
+              p.street,
+              p.city||p.county||p.district,
+              p.state,
+              'Chile'
+            ].filter(Boolean).join(', ');
+          }).filter(Boolean);
 
-        if (texto.length < 2) return;
+        }catch(err){
+          if(err.name === 'AbortError') throw err;
 
-        const consulta = normalizar(texto);
+          const url2 =
+            'https://nominatim.openstreetmap.org/search?format=jsonv2' +
+            '&addressdetails=1&countrycodes=cl&limit=15&q=' +
+            encodeURIComponent(q);
 
-        // SUGERENCIAS LOCALES INSTANTÁNEAS
+          const r2 = await fetch(url2,{signal:ctrl.signal});
+          if(!r2.ok) throw Error('Error de búsqueda alternativa');
 
-        const locales = lugaresLocales.filter(lugar => {
+          const data2 = await r2.json();
 
-            return normalizar(lugar).includes(consulta);
+          remotos = data2.map(f => {
+            const a = f.address||{};
+            const ciudad = a.city||a.town||a.village||
+              a.municipality||a.county||'';
+            const region = a.state||'';
 
-        });
-
-        mostrarSugerencias(input, lista, locales);
-
-        // RESULTADOS GUARDADOS EN CACHÉ
-
-        if (cache.has(consulta)) {
-
-            mostrarSugerencias(
-                input,
-                lista,
-                [...locales, ...cache.get(consulta)]
-            );
-
-            return;
-
+            return [
+              f.name || (f.display_name||'').split(',')[0],
+              a.house_number,
+              a.road,
+              ciudad,
+              region,
+              'Chile'
+            ].filter(Boolean).join(', ');
+          });
         }
 
-        // CONSULTA EXTERNA
+        if(version !== st.version) return;
 
-        if (texto.length < 3) return;
+        cache.set(key,remotos);
+        if(cache.size > 80) cache.delete(cache.keys().next().value);
 
-        const temporizador = setTimeout(async () => {
+        mostrar([...local,...remotos]);
+        estado.textContent = remotos.length
+          ? 'Selecciona una dirección de la lista.'
+          : 'No encontramos coincidencias. Prueba con otra búsqueda.';
 
-            const controlador = new AbortController();
-
-            controladores.set(input, controlador);
-
-            try {
-
-                const url =
-                    "https://photon.komoot.io/api/" +
-                    "?q=" + encodeURIComponent(texto) +
-                    "&lat=-33.0245" +
-                    "&lon=-71.5518" +
-                    "&limit=15";
-
-                const respuesta = await fetch(url, {
-                    signal: controlador.signal
-                });
-
-                if (!respuesta.ok) {
-                    throw new Error("Servicio no disponible");
-                }
-
-                const datos = await respuesta.json();
-
-                if (numeroBusqueda !== busquedaActual) return;
-
-                const encontrados = [];
-
-                (datos.features || []).forEach(lugar => {
-
-                    const p = lugar.properties || {};
-
-                    const informacion = [
-                        p.state,
-                        p.county,
-                        p.city,
-                        p.district
-                    ].filter(Boolean).join(" ").toLowerCase();
-
-                    const regionValida = [
-                        "valparaíso",
-                        "valparaiso",
-                        "viña del mar",
-                        "quilpué",
-                        "quilpue",
-                        "villa alemana",
-                        "limache",
-                        "concón",
-                        "concon",
-                        "quillota",
-                        "san antonio"
-                    ].some(nombre => informacion.includes(nombre));
-
-                    if (!regionValida) return;
-
-                    const direccion = [
-                        p.name,
-                        p.housenumber,
-                        p.street,
-                        p.city || p.county,
-                        p.state,
-                        "Chile"
-                    ].filter(Boolean).join(", ");
-
-                    encontrados.push(direccion);
-
-                });
-
-                cache.set(consulta, encontrados);
-
-                mostrarSugerencias(
-                    input,
-                    lista,
-                    [...locales, ...encontrados]
-                );
-
-            } catch (error) {
-
-                if (error.name !== "AbortError") {
-
-                    // CONSERVAR SUGERENCIAS LOCALES
-
-                    if (numeroBusqueda === busquedaActual) {
-
-                        mostrarSugerencias(
-                            input,
-                            lista,
-                            locales
-                        );
-
-                    }
-
-                }
-
-            }
-
-        }, 200);
-
-        temporizadores.set(input, temporizador);
-
-    });
-
+      }catch(e){
+        if(e.name !== 'AbortError' && version === st.version){
+          estado.textContent = 'No se pudo buscar. Revisa tu conexión o escribe la dirección completa.';
+        }
+      }
+    },300);
+  });
 }
 
+const so = document.getElementById('sugerenciasOrigen');
+const sd = document.getElementById('sugerenciasDestino');
 
-// ACTIVAR BUSCADORES
+sugerir(origen,so);
+sugerir(destino,sd);
 
-configurarBuscador(origen, sugerenciasOrigen);
-
-configurarBuscador(destino, sugerenciasDestino);
-
-
-// CERRAR LISTAS
-
-document.addEventListener("click", evento => {
-
-    if (!evento.target.closest(".buscador")) {
-
-        sugerenciasOrigen.style.display = "none";
-
-        sugerenciasDestino.style.display = "none";
-
-    }
-
+document.addEventListener('click',e => {
+  if(!e.target.closest('.buscador')){
+    so.style.display = 'none';
+    sd.style.display = 'none';
+  }
 });
 
-
-// INVERTIR DIRECCIONES
-
-document.getElementById("invertir").onclick = () => {
-
-    const temporal = origen.value;
-
-    origen.value = destino.value;
-
-    destino.value = temporal;
-
-    sugerenciasOrigen.style.display = "none";
-
-    sugerenciasDestino.style.display = "none";
-
+document.getElementById('invertir').onclick = () => {
+  [origen.value,destino.value] = [destino.value,origen.value];
+  so.style.display = sd.style.display = 'none';
 };
 
+document.getElementById('limpiar').onclick = () => {
+  origen.value = '';
+  destino.value = '';
+  reloj.style.display = 'none';
+  so.style.display = sd.style.display = 'none';
+  estado.textContent = '';
 
-// LIMPIAR
-
-document.getElementById("limpiar").onclick = () => {
-
-    origen.value = "";
-
-    destino.value = "";
-
-    reloj.style.display = "none";
-
-    sugerenciasOrigen.style.display = "none";
-
-    sugerenciasDestino.style.display = "none";
-
-    estado.textContent = "";
-
+  for(const st of estados.values()){
+    st.version++;
+    clearTimeout(st.timer);
+    st.controller?.abort();
+  }
 };
 
+document.getElementById('planificar').onclick = () => {
+  const o = origen.value.trim();
+  const d = destino.value.trim();
 
-// PLANIFICAR VIAJE
+  if(!o || !d){
+    alert('Escribe el origen y el destino.');
+    return;
+  }
 
-document.getElementById("planificar").onclick = () => {
+  reloj.style.display = 'block';
+  hora();
 
-    const o = origen.value.trim();
+  const url = 'https://www.google.com/maps/dir/?api=1' +
+    '&origin=' + encodeURIComponent(o) +
+    '&destination=' + encodeURIComponent(d) +
+    '&travelmode=transit';
 
-    const d = destino.value.trim();
-
-    if (!o || !d) {
-
-        alert("Escribe el origen y el destino.");
-
-        return;
-
-    }
-
-    // MOSTRAR RELOJ
-
-    reloj.style.display = "block";
-
-    hora();
-
-    // ABRIR GOOGLE MAPS EN TRANSPORTE PÚBLICO
-
-    const url =
-        "https://www.google.com/maps/dir/?api=1" +
-        "&origin=" + encodeURIComponent(o) +
-        "&destination=" + encodeURIComponent(d) +
-        "&travelmode=transit";
-
-    window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-    );
-
+  window.open(url,'_blank','noopener,noreferrer');
 };
-
 </script>
-
 </body>
 </html>
+
